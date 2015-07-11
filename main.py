@@ -6,6 +6,8 @@ if not pygame.font:
 	print('Warning, fonts disabled')
 
 FONT_PATH = "fonts/IndieFlower.ttf"
+
+COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (255, 255, 255)
 
 class App:
@@ -20,6 +22,8 @@ class App:
 
 	def MainLoop(self):
 		while 1:
+			self.screen.fill(COLOR_BLACK)
+
 			for event in pygame.event.get():
 				#Close button
 				if event.type == pygame.QUIT:
@@ -34,7 +38,7 @@ class App:
 				'''if event.type == pygame.MOUSEBUTTONDOWN:
 					#whatever
 					print('something')'''
-					
+
 			self.screenState.update()
 			pygame.display.update()
 
@@ -47,29 +51,49 @@ class IntroScreen:
 		screenHeight = pygame.display.Info().current_h
 
 		#Load resources and fonts
-		bg = pygame.image.load('images/booth_main1_blur.jpg')
-		bg = pygame.transform.scale(bg, (screenWidth, screenHeight))
+		self.bg = pygame.image.load('images/booth_main1_blur.jpg')
+		self.bg = pygame.transform.scale(self.bg, (screenWidth, screenHeight))
 
-		fontHeader = pygame.font.Font(FONT_PATH, 64)
-		fontStart = pygame.font.Font(FONT_PATH, 32)
+		fontHeader = pygame.font.Font(FONT_PATH, 128)
+		fontStart = pygame.font.Font(FONT_PATH, 64)
 
 		#Header text
-		textHeader = fontHeader.render('Far-More Shade', True, COLOR_WHITE)
-		textHeaderBounds = textHeader.get_rect()
-		textHeaderBounds.center = (screenWidth / 2, screenHeight / 3)
+		self.textHeader = fontHeader.render('Far-More Shade', True, COLOR_WHITE)
+		self.textHeaderBounds = self.textHeader.get_rect()
+		self.textHeaderBounds.center = (screenWidth / 2, 200)
 
 		#Pass Start text
 		self.textStart = fontStart.render('Tap to Start', True, COLOR_WHITE)
 		self.textStartBounds = self.textStart.get_rect()
 		self.textStartBounds.center = (screenWidth / 2, screenHeight - 100)
-		
-		#Draw bg and header text
-		self.screen.blit(bg, (0, 0))
-		self.screen.blit(textHeader, textHeaderBounds)
+
+		self.pulseScale = 1
+		self.pulseScaleIsIncreasing = True
 
 	def update(self):
+		"""
+		if self.pulseScaleIsIncreasing:
+			self.pulseScale += 0.1
+		#else:
+			#self.pulseScale -= 0.1
+
+		if self.pulseScale >= 1.2 and self.pulseScaleIsIncreasing:
+			self.pulseScaleIsIncreasing = False
+		if self.pulseScale <= 1 and not self.pulseScaleIsIncreasing:
+			self.pulseScaleIsIncreasing = True
 		#This will update later
+
+		print(self.pulseScale)
+
+		w,h = self.textStart.get_size()
+		w = (int)(w * self.pulseScale)
+		h = (int)(h * self.pulseScale)
+		self.textStart = pygame.transform.scale(self.textStart, (w, h))"""
+
+		self.screen.blit(self.bg, (0, 0))
+		self.screen.blit(self.textHeader, self.textHeaderBounds)
 		self.screen.blit(self.textStart, self.textStartBounds)
+		#self.screen.blit(self.textStart, (10, 10))
 
 if __name__ == "__main__":
 	window = App()
