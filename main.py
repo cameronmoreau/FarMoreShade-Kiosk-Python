@@ -54,8 +54,8 @@ class IntroScreen:
 		self.bg = pygame.image.load('images/booth_main1_blur.jpg')
 		self.bg = pygame.transform.scale(self.bg, (screenWidth, screenHeight))
 
-		fontHeader = pygame.font.Font(FONT_PATH, 128)
-		fontStart = pygame.font.Font(FONT_PATH, 64)
+		fontHeader = pygame.font.Font(FONT_PATH, 164)
+		fontStart = pygame.font.Font(FONT_PATH, 46)
 
 		#Header text
 		self.textHeader = fontHeader.render('Far-More Shade', True, COLOR_WHITE)
