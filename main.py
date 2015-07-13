@@ -12,9 +12,6 @@ COLOR_WHITE = (255, 255, 255)
 
 STATE_INTRO = 0
 STATE_CATEGORY = 1
-STATE_CATEOGRY_PATTERNS = 2
-STATE_CATEOGYR_SHOP = 3
-STATE_CATEGORY_THIRD = 4
 
 DATA_DIR = "data/Categories"
 
@@ -39,6 +36,7 @@ class Drawables:
 
 	    circle       = pygame.Surface([min(rect.size)*3]*2, pygame.SRCALPHA)
 	    pygame.draw.ellipse(circle,(0,0,0),circle.get_rect(),0)
+	    #circle       = pygame.transform.smoothscale(circle,[int(min(rect.size)*radius)]*2)
 	    circle       = pygame.transform.scale(circle,[int(min(rect.size)*radius)]*2)
 
 	    radius              = rectangle.blit(circle,(0,0))
@@ -75,14 +73,8 @@ class App:
 			elif(state == STATE_CATEGORY):
 				self.screenState = CategoryScreen(self)
 
-			elif(state == STATE_CATEOGRY_PATTERNS):
-				self.screenState = CategoryScreen(self, state)
-
-			elif(state == STATE_CATEGORY_SHOP):
-				self.screenState = CategoryScreen(self, state)
-
-			elif(state == STATE_CATEGORY_THIRD):
-				self.screenState = CategoryScreen(self, state)
+	def setStateCategory(self, category):
+		self.screenState = CategoryScreen(self, category)
 
 
 	def MainLoop(self):
@@ -205,6 +197,7 @@ class CategoryScreen:
 		self.backButton.set_alpha(80)
 		self.backButton.fill((0, 0, 0))
 
+		self.categoryBounds = []
 		if(self.category == STATE_CATEGORY):
 			self.categories = self.getCategories();
 			self.categoryImages = []
@@ -227,7 +220,17 @@ class CategoryScreen:
 	def events(self, event):
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if(self.backButton.get_rect().collidepoint(event.pos)):
-				self.app.setState(STATE_INTRO)
+				if(self.category == STATE_CATEGORY):
+					self.app.setState(STATE_INTRO)
+				else:
+					self.app.setState(STATE_CATEGORY)
+
+			#loop though categories
+			for rect in self.categoryBounds:
+				if rect.collidepoint(event.pos):
+					index = self.categoryBounds.index(rect) #This is awful, dont judge me
+					self.app.setStateCategory(self.categories[index])
+				
 
 	def fillBackground(self):
 		bgWidth, bgHeight = self.bg.get_size()
@@ -254,22 +257,21 @@ class CategoryScreen:
 			maxImageHeight
 		), pygame.SRCALPHA)
 
-		boundsBox = bounds.get_rect()
-		boundsBox.center = (self.screenWidth / 2, self.screenHeight / 2)
-		#self.screen.blit(bounds, boundsBox)
+		boundsBoxPos = ((self.screenWidth - bounds.get_width()) / 2, (self.screenHeight - bounds.get_height()) / 2)
 
 		for i in range(len(self.categories)):
 			image = self.categoryImages[i]
 			image = pygame.transform.scale(image, (imageWidth, imageHeight))
-			pos = (
-				(i * maxImageWidth) + 8 + i * padding, 
-				8
-			)
+			xOffset = (i * maxImageWidth) + 8 + i * padding
+			pos = (xOffset, 8)
+
+			rect = pygame.Rect((boundsBoxPos[0] + xOffset - 8, boundsBoxPos[1]), (maxImageWidth, maxImageHeight))
+			self.categoryBounds.append(rect)
 
 			self.drawImageWithBorder(bounds, image, pos)
 			bounds.blit(image, pos)
 
-		self.screen.blit(bounds, boundsBox)
+		self.screen.blit(bounds, boundsBoxPos)
 
 	def drawImageWithBorder(self, surface, image, pos):
 		padding = 8
